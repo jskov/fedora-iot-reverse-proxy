@@ -1,16 +1,18 @@
-# Home Assistant RPM for Fedora IOT
+# Reverse Proxy RPM for mada.dk on Fedora IOT
 
 [![Copr build status](https://copr.fedorainfracloud.org/coprs/jskov/iot-assistant/package/assistant/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/jskov/iot-assistant/package/assistant/)
 
 I use this RPM for layering in Fedora IOT.
 
-It runs [Home Assistant](https://www.home-assistant.io/) in a [Podman Quadlet](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html) with a preliminary service to fix the integration with the system (user setup and USB access).
+It runs [nginx](https://nginx.org/) in a [Podman Quadlet](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html) with a preliminary service to fix the integration with the system (user setup).
 
 >[!NOTE]
 >This project is Open Source. But I am not interested in providing support or help in any form.  
 >You are welcome to fork it though!
 
 # Dev notes
+
+
 
 
 ## Build RPM
@@ -20,7 +22,7 @@ Build requires RPM 4.20 so needs to be built on Fedora 41 or newer.
 Set up toolbox:
 
 ```console
-$ toolbox create fedora-41 -r f41
+$ toolbox create fedora
 
 $ toolbox enter fedora-41
 $ sudo dnf install rpmbuild selinux-policy-devel tito -y
@@ -31,7 +33,7 @@ Build rpm locally:
 ```console
 $ toolbox enter fedora-41
 $ cd ROOT OF REPOSITORY
-$ rpmlint assistant.spec
+$ rpmlint reverse-proxy.spec
 $ tito build --rpm --test
 ```
 
@@ -44,7 +46,7 @@ $ tito tag --keep-version
 Build from repo:
 
 ```console
-$ copr-cli buildscm --clone-url https://github.com/jskov/fedora-iot-assistant.git --method tito jskov/iot-assistant
+$ copr-cli buildscm --clone-url https://github.com/jskov/fedora-iot-reverse-proxy.git --method tito jskov/iot-reverse-proxy
 ```
 
 
@@ -54,18 +56,18 @@ $ copr-cli buildscm --clone-url https://github.com/jskov/fedora-iot-assistant.gi
 
 ```console
 # The --uninstall allows updating an existing layered rpm (older version)
-$ sudo rpm-ostree install /var/home/jskov/layers/assistant-2024.10.4-0.fc41.x86_64.rpm --uninstall assistant
+$ sudo rpm-ostree install /var/home/jskov/layers/reverse-proxy-1.0.0-0.fc42.x86_64.rpm --uninstall assistant
 
 # The policy for enabling service does not appear to work, so:
-$ sudo systemctl enable assistant
-$ sudo systemctl enable assistant-prep
+$ sudo systemctl enable reverse-proxy
+$ sudo systemctl enable reverse-proxy-prep
 $ sudo systemctl reboot
 ```
 
 ### Firewall
 
 ```console
-$ sudo firewall-cmd --add-port=8123/tcp --permanent
+$ sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8080 --permanent
 ```
 
 ## Notes

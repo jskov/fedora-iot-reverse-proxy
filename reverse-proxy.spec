@@ -48,6 +48,6 @@ install -Dp -m644 reverse-proxy.container %{buildroot}/etc/containers/systemd/us
 
 
 %changelog
-* Sat Apr 06 2025 Jesper Skov <jskov@mada.dk> 1.0.0
+* Wed Apr 09 2025 Jesper Skov <jskov@mada.dk> 1.0.0
 - First release
 - Add first reverse proxy entries (jskov@mada.dk)
