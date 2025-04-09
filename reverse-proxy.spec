@@ -26,9 +26,11 @@ Reverse Proxy configuration for mada.dk, running in a Systemd container on Fedor
 
 rm -f %{buildroot}/etc/containers/systemd/users/3010/reverse-proxy.container
 rm -f %{buildroot}/usr/lib/systemd/system/reverse-proxy-prep.service
+rm -f %{buildroot}/usr/share/mada/reverse-proxy
 
 install -Dp -m644 reverse-proxy-prep.service %{buildroot}/usr/lib/systemd/system/reverse-proxy-prep.service
 install -Dp -m644 reverse-proxy.container %{buildroot}/etc/containers/systemd/users/3010/reverse-proxy.container
+install -Dp -m644 nginx.conf %{buildroot}/usr/share/mada/reverse-proxy/nginx.conf
 
 %pre
 
@@ -45,7 +47,7 @@ install -Dp -m644 reverse-proxy.container %{buildroot}/etc/containers/systemd/us
 
 /usr/lib/systemd/system/reverse-proxy-prep.service
 /etc/containers/systemd/users/3010/reverse-proxy.container
-
+/usr/share/mada/reverse-proxy/nginx.conf
 
 %changelog
 * Wed Apr 09 2025 Jesper Skov <jskov@mada.dk> 1.0.0
