@@ -6,9 +6,6 @@
 version: 2
 updates:
   - package-ecosystem: "docker"
-    directory: "/.git"
+    directory: "/"
     schedule:
       interval: "daily"
-
-      #dummy
-      
