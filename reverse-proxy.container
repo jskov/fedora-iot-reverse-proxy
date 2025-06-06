@@ -6,17 +6,17 @@
 #
 # sudo systemctl daemon-reload
 # systemctl list-unit-files
-# systemctl start assistant
+# systemctl start reverse-proxy
 #
-# sudo systemctl --user -M reverse-proxy@ status reverse-proxy
+# sudo systemctl --user -M revproxy@ status reverse-proxy
 
 [Service]
 # Allows long image download time
 TimeoutStartSec=900
 
-# Implied by systemd users/3000
-#User=reverse-proxy
-#Group=reverse-proxy
+# Implied by systemd users/3010
+#User=revproxy
+#Group=revproxy
 
 # Wait for network startup - podman-user-wait-network-online.service should be added in Podman 5.3.0
 # via https://github.com/containers/podman/pull/24305

@@ -1,6 +1,6 @@
 # Reverse Proxy RPM for mada.dk on Fedora IOT
 
-[![Copr build status](https://copr.fedorainfracloud.org/coprs/jskov/iot-assistant/package/assistant/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/jskov/iot-assistant/package/assistant/)
+[![Copr build status](https://copr.fedorainfracloud.org/coprs/jskov/iot-reverse-proxy/package/reverse-proxy/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/jskov/iot-reverse-proxy/package/reverse-proxy/)
 
 I use this RPM for layering in Fedora IOT.
 
@@ -63,7 +63,7 @@ $ copr-cli buildscm --clone-url https://github.com/jskov/fedora-iot-reverse-prox
 
 ```console
 # The --uninstall allows updating an existing layered rpm (older version)
-$ sudo rpm-ostree install /var/home/jskov/layers/reverse-proxy-1.0.0-0.fc42.x86_64.rpm --uninstall assistant
+$ sudo rpm-ostree install /var/home/jskov/layers/reverse-proxy-1.0.0-0.fc42.x86_64.rpm --uninstall reverse-proxy
 
 # The policy for enabling service does not appear to work, so:
 $ sudo systemctl enable reverse-proxy
