@@ -25,8 +25,7 @@ TimeoutStartSec=900
 ExecStartPre=nm-online -s
 
 [Container]
-# This is stable-alpine3.20-slim
-Image = docker.io/_/nginx@sha256:de9d2e4aadb2c80d5dbfe9c3fa9d5d2ae8fe3a88a35dd1926cd59d28cf78bde5
+Image = @NGINX_IMAGE@
 
 ContainerName=reverse-proxy
 Environment=TZ=Europe/Copenhagen
