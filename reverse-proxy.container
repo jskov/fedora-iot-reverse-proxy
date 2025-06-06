@@ -1,0 +1,44 @@
+# For Podman Quad
+# To be placed in /etc/containers/systemd/users/3010/reverse-proxy.container
+#
+# Debug rendering with:
+#  /usr/lib/systemd/user-generators/podman-user-generator --dryrun
+#
+# sudo systemctl daemon-reload
+# systemctl list-unit-files
+# systemctl start reverse-proxy
+#
+# sudo systemctl --user -M revproxy@ status reverse-proxy
+
+[Service]
+# Allows long image download time
+TimeoutStartSec=900
+
+# Implied by systemd users/3010
+#User=revproxy
+#Group=revproxy
+
+# Wait for network startup - podman-user-wait-network-online.service should be added in Podman 5.3.0
+# via https://github.com/containers/podman/pull/24305
+# Without this container is started before networking which Podman fails on
+# see https://www.reddit.com/r/podman/comments/1clo1ct/container_starting_before_network_is_up/
+ExecStartPre=nm-online -s
+
+[Container]
+Image = @NGINX_IMAGE@
+
+ContainerName=reverse-proxy
+Environment=TZ=Europe/Copenhagen
+PublishPort=8080:80
+Volume=/usr/share/mada/reverse-proxy/nginx.conf:/etc/nginx/conf.d/default.conf:Z,ro
+
+GlobalArgs=--log-level=warn
+PodmanArgs=--group-add=keep-groups --cap-add=CAP_NET_RAW,CAP_NET_BIND_SERVICE --cidfile=/var/run/user/3010/reverse-proxy.cid
+
+[Unit]
+# Cannot depend on root service. Instead relies on reverse-proxy-prep comes before podman-user-wait-network-online.service
+#Requires=reverse-proxy-prep.service
+#After=reverse-proxy-prep.service
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,22 @@
+# Preparation script for running reverse-proxy.
+# To be placed in /usr/lib/systemd/system/reverse-proxy-prep.service
+#
+# The script runs as root and contains actions to:
+# * Ensures user revproxy is created
+# * Sets up linger for the revproxy user
+
+[Service]
+Type=oneshot
+
+ExecStartPre=sh -c 'id revproxy 2>/dev/null || useradd --uid 3010 revproxy'
+ExecStartPre=loginctl enable-linger revproxy
+RemainAfterExit=true
+
+[Unit]
+# Wait for sysusers (so creating user is ok)
+After=systemd-sysusers.service
+# Do it before network-online which user quadlets wait for
+Before=network-online.target
+
+[Install]
+WantedBy=default.target
