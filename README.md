@@ -17,21 +17,19 @@ It runs [nginx](https://nginx.org/) in a [Podman Quadlet](https://docs.podman.io
 
 ## Build RPM
 
-Build requires RPM 4.20 so needs to be built on Fedora 41 or newer.
-
 Set up toolbox:
 
 ```console
-$ toolbox create fedora
+$ distrobox create -i registry.fedoraproject.org/fedora:42 -n fedora-42
 
-$ toolbox enter fedora-41
+$ distrobox enter fedora-42
 $ sudo dnf install rpmbuild selinux-policy-devel tito -y
 ```
 
-Build rpm locally (note that this builds committed data only!):
+Build rpm locally (note that this builds *committed data only!*):
 
 ```console
-$ toolbox enter fedora-41
+$ distrobox enter fedora-42
 $ cd ROOT OF REPOSITORY
 $ rpmlint reverse-proxy.spec
 $ tito build --rpm --test
@@ -39,7 +37,12 @@ $ tito build --rpm --test
 
 Test rpm locally:
 
+
+
 ```console
+$ distrobox create -i registry.fedoraproject.org/fedora:42 --init --additional-packages "systemd" -n fedora-test
+$ distrobox enter fedora-test
+
 $ sudo rpm -i /tmp/tito/x86_64/reverse-proxy-1.0.0-0.git.3.2d74dcb.fc41.x86_64.rpm
 ```
 
