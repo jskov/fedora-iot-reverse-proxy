@@ -9,7 +9,7 @@
 Type=oneshot
 
 ExecStartPre=sh -c 'id revproxy 2>/dev/null || useradd --uid 3010 revproxy'
-ExecStartPre=loginctl enable-linger revproxy
+ExecStart=loginctl enable-linger revproxy
 RemainAfterExit=true
 
 [Unit]

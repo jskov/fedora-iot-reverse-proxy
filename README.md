@@ -32,12 +32,11 @@ Build rpm locally (note that this builds *committed data only!*):
 $ distrobox enter fedora-42
 $ cd ROOT OF REPOSITORY
 $ rpmlint reverse-proxy.spec
-$ tito build --rpm --test
+$ rm -rf /tmp/tito/x86_64/ ; tito build --rpm --test
 ```
 
-Test rpm locally:
-
-
+Testing the rpm locally is hard to do on an Atomic OS.
+Installation can be tested on a container containing init:
 
 ```console
 $ distrobox create -i registry.fedoraproject.org/fedora:42 --init --additional-packages "systemd" -n fedora-test
@@ -45,6 +44,14 @@ $ distrobox enter fedora-test
 
 $ sudo rpm -i /tmp/tito/x86_64/reverse-proxy-1.0.0-0.git.3.2d74dcb.fc41.x86_64.rpm
 ```
+
+But `systemctl` does not work with the --machine/--user in this setup.
+
+So test the image installation/system-d interaction on plain Fedora (in a box).
+Remember to make `/tmp/tito` available to the Flatpak Boxes application.
+
+
+
 
 
 Update spec version (--keep-version to keep manually maintained version in spec file):
@@ -69,8 +76,8 @@ $ copr-cli buildscm --clone-url https://github.com/jskov/fedora-iot-reverse-prox
 $ sudo rpm-ostree install /var/home/jskov/layers/reverse-proxy-1.0.0-0.fc42.x86_64.rpm --uninstall reverse-proxy
 
 # The policy for enabling service does not appear to work, so:
-$ sudo systemctl enable reverse-proxy
 $ sudo systemctl enable reverse-proxy-prep
+$ sudo systemctl enable reverse-proxy
 $ sudo systemctl reboot
 ```
 
