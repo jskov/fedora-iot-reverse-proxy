@@ -23,8 +23,8 @@ Image = @NGINX_IMAGE@
 
 ContainerName=reverse-proxy
 Environment=TZ=Europe/Copenhagen
-PublishPort=8080:80
-Volume=/usr/share/mada/reverse-proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+PublishPort=8080:8000
+Volume=/usr/share/mada/reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
 
 GlobalArgs=--log-level=warn
 PodmanArgs=--group-add=keep-groups --cap-add=CAP_NET_RAW,CAP_NET_BIND_SERVICE --cidfile=/var/run/user/3010/reverse-proxy.cid

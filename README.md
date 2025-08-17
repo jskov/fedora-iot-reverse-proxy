@@ -215,3 +215,23 @@ Aug 03 09:27:10 fedora useradd[1074]: new user: name=revproxy, UID=3010, GID=301
 Aug 03 09:27:10 fedora sh[1074]: Creating mailbox file: File exists
 Aug 03 09:27:10 fedora systemd[1]: Finished reverse-proxy-prep.service.
 ```
+
+The user process should be running after restart:
+
+```console
+$ sudo systemctl --user -M revproxy@ status reverse-proxy
+× reverse-proxy.service
+     Loaded: loaded (/etc/containers/systemd/users/3010/reverse-proxy.container; generated)
+    Drop-In: /usr/lib/systemd/user/service.d
+             └─10-timeout-abort.conf
+     Active: failed (Result: exit-code) since Sun 2025-08-17 09:14:14 CEST; 2min 39s ago
+   Duration: 477ms
+ Invocation: 51567d56247d4c08a40e5ee7fbd3aba1
+    Process: 2281 ExecStart=/usr/bin/podman --log-level=warn run --name reverse-proxy --cidfile=/run/user/3010/reverse-proxy.cid --replace --rm --cgroups=split --sdnotify=conmon -d -v /usr/share/mada/reverse-proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro --publish 8080:80 --env TZ=Europe/Copenhagen --group-add=keep-groups --cap-add=CAP_NET_RAW,CAP_NET_BIND_SERVICE --cidfile=/var/run/user/3010/reverse-proxy.cid docker.io/library/nginx@sha256:d83c0138ea82c9f05c4378a5001e0c71256b647603c10c186bd7697a4db722d3 (code=exited, status=1/FAILURE)
+    Process: 2316 ExecStopPost=/usr/bin/podman --log-level=warn rm -v -f -i --cidfile=/run/user/3010/reverse-proxy.cid (code=exited, status=0/SUCCESS)
+   Main PID: 2281 (code=exited, status=1/FAILURE)
+   Mem peak: 195.7M
+        CPU: 4.856s
+```
+
+**Debugging Container**
