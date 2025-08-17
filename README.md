@@ -12,8 +12,23 @@ It runs [nginx](https://nginx.org/) in a [Podman Quadlet](https://docs.podman.io
 
 # Dev notes
 
+## Testing nginx config
 
+```console
+# enter container Pod
 
+# To test local web file access, copy files and change config to use /tmp/web as root
+$ mkdir /tmp/web ; cp ./index.html /tmp/web/
+
+$ cp ./nginx.conf  /tmp/ ;  sudo nginx -c /tmp/nginx.conf -g 'daemon off;'
+...
+
+$ curl -v -H "host: pihole.mada.dk" localhost:8000
+# should respond with data from pihole
+
+$ curl -v localhost:8000
+# should respond with data from web-folder
+```
 
 ## Build RPM
 
@@ -24,6 +39,7 @@ $ distrobox create -i registry.fedoraproject.org/fedora:42 -n fedora-42
 
 $ distrobox enter fedora-42
 $ sudo dnf install rpmbuild selinux-policy-devel tito -y
+$ sudo dnf install nginx -y
 ```
 
 Build rpm locally (note that this builds *committed data only!*):
@@ -71,15 +87,49 @@ $ copr-cli buildscm --clone-url https://github.com/jskov/fedora-iot-reverse-prox
 
 ### RPM
 
-```console
-# The --uninstall allows updating an existing layered rpm (older version)
-$ sudo rpm-ostree install /var/home/jskov/layers/reverse-proxy-1.0.0-0.fc42.x86_64.rpm --uninstall reverse-proxy
+Install the RPM; the --uninstall allows updating an existing layered rpm (older version):
 
-# The policy for enabling service does not appear to work, so:
+```console
+$ sudo rpm-ostree install /var/home/jskov/layers/reverse-proxy-1.0.0-0.fc42.x86_64.rpm --uninstall reverse-proxy
+```
+
+Enable the prep-service; the systemd policy for enabling a service does not appear to work (on Atom?):
+
+```console
 $ sudo systemctl enable reverse-proxy-prep
-$ sudo systemctl enable reverse-proxy
 $ sudo systemctl reboot
 ```
+
+The user process should be running after restart:
+
+```console
+$ sudo systemctl --user -M revproxy@ status reverse-proxy
+● reverse-proxy.service
+     Loaded: loaded (/etc/containers/systemd/users/3010/reverse-proxy.container; generated)
+    Drop-In: /usr/lib/systemd/user/service.d
+             └─10-timeout-abort.conf
+     Active: active (running) since Sun 2025-08-03 09:27:18 CEST; 3min 7s ago
+ Invocation: cca68875c12547d1a900859f3eaf0f36
+   Main PID: 2300
+      Tasks: 11 (limit: 14265)
+     Memory: 138.8M (peak: 194.5M)
+        CPU: 4.356s
+     CGroup: /user.slice/user-3010.slice/user@3010.service/app.slice/reverse-proxy.service
+             ├─libpod-payload-675f1a025164f3198ff853deaa928839c1d5dc3188292ff991561aae9697ccee
+             │ ├─2302 "nginx: master process nginx -g daemon off;"
+             │ ├─2318 "nginx: worker process"
+             │ ├─2319 "nginx: worker process"
+             │ ├─2320 "nginx: worker process"
+             │ ├─2321 "nginx: worker process"
+             │ ├─2322 "nginx: worker process"
+             │ ├─2323 "nginx: worker process"
+             │ ├─2324 "nginx: worker process"
+             │ └─2325 "nginx: worker process"
+             └─runtime
+               ├─2298 /usr/bin/pasta --config-net -t 8080-8080:80-80 --dns-forward 169.254.1.1 -u none -T none -U none --no-map-gw --quiet --netns /run/user/3010/netns/netns-32ef1b12-df81-1a12-d64c-dba4b64b4733 --map-guest-addr 169.254.1.2
+               └─2300 /usr/bin/conmon --api-version 1 -c 675f1a025164f3198ff853deaa928839c1d5dc3188292ff991561aae9697ccee -u 675f1a025164f3198ff853deaa928839c1d5dc3188292ff991561aae9697ccee -r /usr/bin/crun -b /home/revproxy/.local/share/containers/storage/overlay-containers/675f1a>
+```
+
 
 ### Firewall
 
@@ -109,4 +159,59 @@ $ sudo systemctl status reverse-proxy >/tmp/a
 # Then try to run it:
 $ sudo su - reverse-proxy
 $ /usr/bin/podman xxx
+```
+### Testing pakcage
+
+**Cleanup**
+
+```console
+$ sudo rpm -e reverse-proxy
+$ sudo loginctl disable-linger revproxy
+$ sudo userdel -r revproxy
+```
+
+**Copy to Boxes instance**
+
+NOTE: Remember to make `/tmp/tito` available to the Flatpak Boxes application.
+
+1. Delete old RPM in ~/Downloads
+2. Burger menu, Send File..., upload newly built rpm.
+3. Install new RPM: `sudo rpm -i reverse-proxy-1.0.0-0.git*`
+4. Reboot
+
+```console
+$ sudo systemctl status reverse-proxy-prep
+○ reverse-proxy-prep.service
+     Loaded: loaded (/usr/lib/systemd/system/reverse-proxy-prep.service; disabled; preset: disabled)
+    Drop-In: /usr/lib/systemd/system/service.d
+             └─10-timeout-abort.conf
+     Active: inactive (dead)
+
+$ sudo systemctl enable reverse-proxy-prep
+```
+
+Then reboot the VM.
+
+This should trigger start of `reverse-proxy-prep` service which will cause (user) `reverse-proxy` service to be created and started by Podman.
+
+```console
+$ sudo systemctl status reverse-proxy-prep
+[sudo] password for test: 
+● reverse-proxy-prep.service
+     Loaded: loaded (/usr/lib/systemd/system/reverse-proxy-prep.service; enabled; preset: disabled)
+    Drop-In: /usr/lib/systemd/system/service.d
+             └─10-timeout-abort.conf
+     Active: active (exited) since Sun 2025-08-03 09:27:10 CEST; 24s ago
+ Invocation: 4d40cd73695e4dd3a050cf70d158567b
+    Process: 1074 ExecStartPre=sh -c id revproxy 2>/dev/null || useradd --uid 3010 revproxy (code=exited, status=0/SUCCESS)
+    Process: 1177 ExecStart=loginctl enable-linger revproxy (code=exited, status=0/SUCCESS)
+   Main PID: 1177 (code=exited, status=0/SUCCESS)
+   Mem peak: 5.4M
+        CPU: 69ms
+
+Aug 03 09:27:09 fedora systemd[1]: Starting reverse-proxy-prep.service...
+Aug 03 09:27:10 fedora useradd[1074]: new group: name=revproxy, GID=3010
+Aug 03 09:27:10 fedora useradd[1074]: new user: name=revproxy, UID=3010, GID=3010, home=/home/revproxy, shell=/bin/bash, from=none
+Aug 03 09:27:10 fedora sh[1074]: Creating mailbox file: File exists
+Aug 03 09:27:10 fedora systemd[1]: Finished reverse-proxy-prep.service.
 ```

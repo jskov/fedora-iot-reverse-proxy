@@ -34,6 +34,7 @@ rm -f %{buildroot}/usr/share/mada/reverse-proxy
 install -Dp -m644 reverse-proxy-prep.service %{buildroot}/usr/lib/systemd/system/reverse-proxy-prep.service
 install -Dp -m644 %{_builddir}/reverse-proxy.container %{buildroot}/etc/containers/systemd/users/3010/reverse-proxy.container
 install -Dp -m644 nginx.conf %{buildroot}/usr/share/mada/reverse-proxy/nginx.conf
+install -Dp -m644 index.html %{buildroot}/usr/share/mada/reverse-proxy/web/index.html
 
 %pre
 
@@ -50,6 +51,7 @@ install -Dp -m644 nginx.conf %{buildroot}/usr/share/mada/reverse-proxy/nginx.con
 
 /usr/lib/systemd/system/reverse-proxy-prep.service
 /etc/containers/systemd/users/3010/reverse-proxy.container
+/usr/share/mada/reverse-proxy/web/index.html
 /usr/share/mada/reverse-proxy/nginx.conf
 
 %changelog
