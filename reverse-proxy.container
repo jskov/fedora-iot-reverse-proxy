@@ -23,7 +23,7 @@ Image = @NGINX_IMAGE@
 
 ContainerName=reverse-proxy
 Environment=TZ=Europe/Copenhagen
-PublishPort=8080:8000
+PublishPort=8000:8000
 Volume=/usr/share/mada/reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
 # The entry-point scripts set up IPV6. Kill that
 Tmpfs=/docker-entrypoint.d
