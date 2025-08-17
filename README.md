@@ -168,6 +168,8 @@ $ /usr/bin/podman xxx
 $ sudo rpm -e reverse-proxy
 $ sudo loginctl disable-linger revproxy
 $ sudo userdel -r revproxy
+
+$ sudo sh -c 'rpm -e reverse-proxy ; loginctl disable-linger revproxy ; userdel -r revproxy'
 ```
 
 **Copy to Boxes instance**
@@ -235,3 +237,5 @@ $ sudo systemctl --user -M revproxy@ status reverse-proxy
 ```
 
 **Debugging Container**
+
+```console

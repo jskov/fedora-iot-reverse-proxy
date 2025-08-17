@@ -25,6 +25,8 @@ ContainerName=reverse-proxy
 Environment=TZ=Europe/Copenhagen
 PublishPort=8080:8000
 Volume=/usr/share/mada/reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+# The entry-point scripts set up IPV6. Kill that
+Tmpfs=/docker-entrypoint.d
 
 GlobalArgs=--log-level=warn
 PodmanArgs=--group-add=keep-groups --cap-add=CAP_NET_RAW,CAP_NET_BIND_SERVICE --cidfile=/var/run/user/3010/reverse-proxy.cid
