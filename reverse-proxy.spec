@@ -1,5 +1,5 @@
 Name: reverse-proxy
-Version: 1.0.0
+Version: 1.29.4
 Release: 0%{?dist}
 Summary: Reverse proxy for mada.dk
 
