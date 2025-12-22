@@ -55,6 +55,12 @@ install -Dp -m644 index.html %{buildroot}/usr/share/mada/reverse-proxy/web/index
 /usr/share/mada/reverse-proxy/nginx.conf
 
 %changelog
+* Mon Dec 22 2025 Jesper Skov <jskov@mada.dk> 1.29.4-0
+- new package built with tito
+
+* Mon Dec 22 2025 Jesper Skov <jskov@mada.dk> 1.29.4-0
+- new package built with tito
+
 * Wed Apr 09 2025 Jesper Skov <jskov@mada.dk> 1.0.0
 - First release
 - Add first reverse proxy entries (jskov@mada.dk)
