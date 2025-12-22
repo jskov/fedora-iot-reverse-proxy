@@ -35,17 +35,14 @@ $ curl -v localhost:8000
 Set up toolbox:
 
 ```console
-$ distrobox create -i registry.fedoraproject.org/fedora:42 -n fedora-42
-
-$ distrobox enter fedora-42
-$ sudo dnf install rpmbuild selinux-policy-devel tito -y
-$ sudo dnf install nginx -y
+$ distrobox create -i registry.fedoraproject.org/fedora:43 -n fedora-tito --pre-init-hooks "dnf install -y rpmbuild selinux-policy-devel tito"
+$ 
 ```
 
-Build rpm locally (note that this builds *committed data only!*):
+Build rpm locally (note that this builds on *committed GIT data only!*):
 
 ```console
-$ distrobox enter fedora-42
+$ distrobox enter fedora-rev-proxy
 $ cd ROOT OF REPOSITORY
 $ rpmlint reverse-proxy.spec
 $ rm -rf /tmp/tito/x86_64/ ; tito build --rpm --test
