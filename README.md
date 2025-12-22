@@ -36,7 +36,6 @@ Set up toolbox:
 
 ```console
 $ distrobox create -i registry.fedoraproject.org/fedora:43 -n fedora-tito --pre-init-hooks "dnf install -y rpmbuild selinux-policy-devel tito"
-$ 
 ```
 
 Build rpm locally (note that this builds on *committed GIT data only!*):
@@ -63,14 +62,18 @@ But `systemctl` does not work with the --machine/--user in this setup.
 So test the image installation/system-d interaction on plain Fedora (in a box).
 Remember to make `/tmp/tito` available to the Flatpak Boxes application.
 
-
-
-
-
 Update spec version (--keep-version to keep manually maintained version in spec file):
 
 ```console
+$ export EDITOR=vi
 $ tito tag --keep-version
+
+# This will result in a tag on the git repository, named 'reverse-proxy-$WHATEVER'
+# And an updated file .tito/packages/reverse-proxy
+
+# Note that without the above, the build command will fail with the message:
+#  ERROR: Unable to lookup latest package info.
+#  Perhaps you need to tag first?
 ```
 
 Build from repo:
@@ -86,7 +89,11 @@ $ copr-cli buildscm --clone-url https://github.com/jskov/fedora-iot-reverse-prox
 
 Install the RPM; the --uninstall allows updating an existing layered rpm (older version):
 
+
 ```console
+# Store the RPM locally - do not delete, as long as the RPM is included
+$ mv /tmp/reverse-proxy-1.29.4-0.git.16.b7c4604.fc43.x86_64.rpm ~/_local_layers/reverse-proxy/
+
 $ sudo rpm-ostree install /var/home/jskov/layers/reverse-proxy-1.0.0-0.fc42.x86_64.rpm --uninstall reverse-proxy
 ```
 
