@@ -138,7 +138,7 @@ $ sudo systemctl --user -M revproxy@ status reverse-proxy
 ### Firewall
 
 ```console
-$ sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8080 --permanent
+$ sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8000 --permanent
 ```
 
 ## Notes
