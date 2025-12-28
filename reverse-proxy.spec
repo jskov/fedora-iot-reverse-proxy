@@ -1,6 +1,6 @@
 Name: reverse-proxy
 Version: 1.29.4
-Release: 0%{?dist}
+Release: 1%{?dist}
 Summary: Reverse proxy for mada.dk
 
 License: EUPL-1.2
@@ -55,9 +55,6 @@ install -Dp -m644 index.html %{buildroot}/usr/share/mada/reverse-proxy/web/index
 /usr/share/mada/reverse-proxy/nginx.conf
 
 %changelog
-* Mon Dec 22 2025 Jesper Skov <jskov@mada.dk> 1.29.4-0
-- new package built with tito
-
 * Mon Dec 22 2025 Jesper Skov <jskov@mada.dk> 1.29.4-0
 - new package built with tito
 
