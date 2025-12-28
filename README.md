@@ -41,7 +41,7 @@ $ distrobox create -i registry.fedoraproject.org/fedora:43 -n fedora-tito --pre-
 Build rpm locally (note that this builds on *committed GIT data only!*):
 
 ```console
-$ distrobox enter fedora-rev-proxy
+$ distrobox enter fedora-tito
 $ cd ROOT OF REPOSITORY
 $ rpmlint reverse-proxy.spec
 $ rm -rf /tmp/tito/x86_64/ ; tito build --rpm --test
@@ -74,6 +74,9 @@ $ tito tag --keep-version
 # Note that without the above, the build command will fail with the message:
 #  ERROR: Unable to lookup latest package info.
 #  Perhaps you need to tag first?
+
+$ git push --follow-tags origin
+$ rm -rf /tmp/tito/x86_64/ ; tito build --rpm
 ```
 
 Build from repo:
@@ -92,9 +95,10 @@ Install the RPM; the --uninstall allows updating an existing layered rpm (older 
 
 ```console
 # Store the RPM locally - do not delete, as long as the RPM is included
-$ mv /tmp/reverse-proxy-1.29.4-0.git.16.b7c4604.fc43.x86_64.rpm ~/_local_layers/reverse-proxy/
+$ scp /tmp/tito/x86_64/reverse-proxy* mada:/tmp/
 
-$ sudo rpm-ostree install /var/home/jskov/layers/reverse-proxy-1.0.0-0.fc42.x86_64.rpm --uninstall reverse-proxy
+$ mv /tmp/reverse-proxy-* ~/_local_layers/reverse-proxy/
+$ sudo rpm-ostree install /var/home/jskov/_local_layers/reverse-proxy/reverse-proxy-1.29.4-1.git.4.d1a4248.fc42.x86_64.rpm --uninstall reverse-proxy
 ```
 
 Enable the prep-service; the systemd policy for enabling a service does not appear to work (on Atom?):
@@ -138,7 +142,8 @@ $ sudo systemctl --user -M revproxy@ status reverse-proxy
 ### Firewall
 
 ```console
-$ sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8000 --permanent
+$ sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=10080 --permanent
+$ sudo firewall-cmd --add-forward-port=port=443:proto=tcp:toport=10443 --permanent
 ```
 
 ## Notes
@@ -153,18 +158,30 @@ So create users/groups in `reverse-proxy-prep` service.
 
 Built by Tito from last commit,
 
-### Manual Test Runs
+### Debugging
 
+Start the container manually to play with its options like this:
 
 ```console
-# Get the command being executed from systemctl:
-$ sudo systemctl status reverse-proxy >/tmp/a
-
-# Then try to run it:
-$ sudo su - reverse-proxy
-$ /usr/bin/podman xxx
+$ sudo su - revproxy
+[revproxy]$ /usr/lib/systemd/user-generators/podman-user-generator --dryrun
+(shows the ExecStart command that will be run)
+[revproxy]$ podman stop reverse-proxy
+(run the ExecStart command - but remove -d)
+[revproxy]$ /usr/bin/podman --log-level=warn run --name reverse-proxy --replace --rm --cgroups=split --tmpfs /docker-entrypoint.d --sdnotify=conmon -v /usr/share/mada/reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:ro --publish 10080:10080 --publish 10443:10443 --env TZ=Europe/Copenhagen --net=pasta:-T,11443,--outbound,10.11.12.13,--ipv4-only --cidfile=/var/run/user/3010/reverse-proxy.cid docker.io/library/nginx@sha256:fc0cff8d49db19250104d2fba8bd1ee3fc2a09ed8163de582804e5d137df7821
 ```
-### Testing pakcage
+
+Or even simpler from remote (still stop the container):
+
+```console
+$ ssh mada -- mkdir /tmp/web
+$ ssh mada -- 'echo HI > /tmp/web/index.html'
+
+$ scp /var/home/jskov/git/fedora-iot-reverse-proxy/nginx.conf mada:/tmp/ ; ssh mada -- podman run -it --replace --rm --name revproxy --net=pasta:-T,11443,--outbound,10.11.12.13,--ipv4-only -p 10443:10443 -v /tmp/web:/usr/share/mada/reverse-proxy/web:Z,ro -v /tmp/nginx.conf:/etc/nginx/nginx.conf:Z,ro docker.io/library/nginx@sha256:fc0cff8d49db19250104d2fba8bd1ee3fc2a09ed8163de582804e5d137df7821
+```
+
+
+### Testing package
 
 **Cleanup**
 
@@ -239,7 +256,3 @@ $ sudo systemctl --user -M revproxy@ status reverse-proxy
    Mem peak: 195.7M
         CPU: 4.856s
 ```
-
-**Debugging Container**
-
-```console
