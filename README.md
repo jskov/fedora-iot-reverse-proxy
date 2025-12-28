@@ -98,7 +98,7 @@ Install the RPM; the --uninstall allows updating an existing layered rpm (older 
 $ scp /tmp/tito/x86_64/reverse-proxy* mada:/tmp/
 
 $ mv /tmp/reverse-proxy-* ~/_local_layers/reverse-proxy/
-$ sudo rpm-ostree install /var/home/jskov/_local_layers/reverse-proxy/reverse-proxy-1.29.4-1.git.4.d1a4248.fc42.x86_64.rpm --uninstall reverse-proxy
+$ sudo rpm-ostree install /var/home/jskov/_local_layers/reverse-proxy/reverse-proxy-1.29.4-1.fc43.x86_64.rpm --uninstall reverse-proxy
 ```
 
 Enable the prep-service; the systemd policy for enabling a service does not appear to work (on Atom?):
@@ -116,26 +116,19 @@ $ sudo systemctl --user -M revproxy@ status reverse-proxy
      Loaded: loaded (/etc/containers/systemd/users/3010/reverse-proxy.container; generated)
     Drop-In: /usr/lib/systemd/user/service.d
              └─10-timeout-abort.conf
-     Active: active (running) since Sun 2025-08-03 09:27:18 CEST; 3min 7s ago
- Invocation: cca68875c12547d1a900859f3eaf0f36
-   Main PID: 2300
-      Tasks: 11 (limit: 14265)
-     Memory: 138.8M (peak: 194.5M)
-        CPU: 4.356s
+     Active: active (running) since Sun 2025-12-28 12:41:23 CET; 7s ago
+ Invocation: bc4c18e38ede43f68ea9c4fb6696b41e
+   Main PID: 1084
+      Tasks: 4 (limit: 9127)
+     Memory: 53.1M (peak: 71.3M)
+        CPU: 445ms
      CGroup: /user.slice/user-3010.slice/user@3010.service/app.slice/reverse-proxy.service
-             ├─libpod-payload-675f1a025164f3198ff853deaa928839c1d5dc3188292ff991561aae9697ccee
-             │ ├─2302 "nginx: master process nginx -g daemon off;"
-             │ ├─2318 "nginx: worker process"
-             │ ├─2319 "nginx: worker process"
-             │ ├─2320 "nginx: worker process"
-             │ ├─2321 "nginx: worker process"
-             │ ├─2322 "nginx: worker process"
-             │ ├─2323 "nginx: worker process"
-             │ ├─2324 "nginx: worker process"
-             │ └─2325 "nginx: worker process"
+             ├─libpod-payload-d2ab563c2577f571b80b526406b1a2986eea0d219cc3b6aeccd902e46c66cb72
+             │ ├─1089 "nginx: master process nginx -g daemon off;"
+             │ └─1126 "nginx: worker process"
              └─runtime
-               ├─2298 /usr/bin/pasta --config-net -t 8080-8080:80-80 --dns-forward 169.254.1.1 -u none -T none -U none --no-map-gw --quiet --netns /run/user/3010/netns/netns-32ef1b12-df81-1a12-d64c-dba4b64b4733 --map-guest-addr 169.254.1.2
-               └─2300 /usr/bin/conmon --api-version 1 -c 675f1a025164f3198ff853deaa928839c1d5dc3188292ff991561aae9697ccee -u 675f1a025164f3198ff853deaa928839c1d5dc3188292ff991561aae9697ccee -r /usr/bin/crun -b /home/revproxy/.local/share/containers/storage/overlay-containers/675f1a>
+               ├─1073 /usr/bin/pasta --config-net -T 11443 --outbound 10.11.12.13 --ipv4-only -t 10080-10080:10080-10080 -t 10443-10443:10443-10443 --dns-forward 169.254.1.1 -u none -U none --no-map-gw --quiet --netns /run/user/3010/netns/netns-19579b83->
+               └─1084 /usr/bin/conmon --api-version 1 -c d2ab563c2577f571b80b526406b1a2986eea0d219cc3b6aeccd902e46c66cb72 -u d2ab563c2577f571b80b526406b1a2986eea0d219cc3b6aeccd902e46c66cb72 -r /usr/bin/crun -b /var/home/revproxy/.local/share/containers/s>
 ```
 
 
