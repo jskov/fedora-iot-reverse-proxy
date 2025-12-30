@@ -55,6 +55,9 @@ install -Dp -m644 index.html %{buildroot}/usr/share/mada/reverse-proxy/web/index
 /usr/share/mada/reverse-proxy/nginx.conf
 
 %changelog
+* Tue Dec 30 2025 Jesper Skov <jskov@mada.dk> 1.29.4-2
+- Add backend music (jskov@mada.dk)
+
 * Sun Dec 28 2025 Jesper Skov <jskov@mada.dk> 1.29.4-1
 - Update ports, use ssl_preread (jskov@mada.dk)
 
