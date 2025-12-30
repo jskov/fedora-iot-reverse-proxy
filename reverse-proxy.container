@@ -30,7 +30,7 @@ Volume=/usr/share/mada/reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
 Tmpfs=/docker-entrypoint.d
 
 GlobalArgs=--log-level=warn
-PodmanArgs=--net=pasta:-T,11443,--outbound,10.11.12.13,--ipv4-only --cidfile=/var/run/user/3010/reverse-proxy.cid
+PodmanArgs=--net=pasta:-T,11443,-T,12443,--outbound,10.11.12.13,--ipv4-only --cidfile=/var/run/user/3010/reverse-proxy.cid
 
 [Unit]
 # Cannot depend on root service. Instead relies on reverse-proxy-prep comes before podman-user-wait-network-online.service

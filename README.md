@@ -98,7 +98,7 @@ Install the RPM; the --uninstall allows updating an existing layered rpm (older 
 $ scp /tmp/tito/x86_64/reverse-proxy* mada:/tmp/
 
 $ mv /tmp/reverse-proxy-* ~/_local_layers/reverse-proxy/
-$ sudo rpm-ostree install /var/home/jskov/_local_layers/reverse-proxy/reverse-proxy-1.29.4-1.fc43.x86_64.rpm --uninstall reverse-proxy
+$ sudo rpm-ostree install /var/home/jskov/_local_layers/reverse-proxy/reverse-proxy-1.29.4-2.fc43.x86_64.rpm --uninstall reverse-proxy
 ```
 
 Enable the prep-service; the systemd policy for enabling a service does not appear to work (on Atom?):
