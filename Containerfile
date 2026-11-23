@@ -3,4 +3,4 @@
 #   * to get Dependabot to notify about nginx image updates
 
 # This is docker.io/library/nginx:1.29.4-alpine3.23-slim
-FROM docker.io/library/nginx@sha256:fc0cff8d49db19250104d2fba8bd1ee3fc2a09ed8163de582804e5d137df7821
+FROM docker.io/library/nginx@sha256:84f7876d21d154885f99554d7ae325d8c2213f9169726ea7ab60642f2573a787
